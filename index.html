@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Profit Snapshot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c2c2c;
+            background-color: #fafafa;
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 3rem 2rem;
+            border-radius: 0;
+        }
+
+        /* Title Section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* Product Table */
+        .product-table-section {
+            margin-bottom: 3rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        thead {
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem 0.75rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1.25rem 0.75rem;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        tbody tr:hover {
+            background-color: #fafafa;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-strong {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-stable {
+            background-color: #fff9e6;
+            color: #f57c00;
+        }
+
+        .status-attention {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            padding-top: 0.5rem;
+            padding-left: 0.75rem;
+        }
+
+        /* Profit Bars Section */
+        .profit-bars-section {
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .profit-bar-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .profit-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .profit-bar-label-name {
+            font-weight: 500;
+        }
+
+        .profit-bar-label-value {
+            color: #666;
+        }
+
+        .profit-bar-container {
+            width: 100%;
+            height: 32px;
+            background-color: #f5f5f5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profit-bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 0.75rem;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .profit-bar-strong {
+            background-color: #4caf50;
+        }
+
+        .profit-bar-stable {
+            background-color: #ffb300;
+        }
+
+        .profit-bar-attention {
+            background-color: #e53935;
+        }
+
+        /* Waste Summary Section */
+        .waste-summary {
+            padding-top: 2rem;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .waste-summary h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .waste-stats {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .waste-stats strong {
+            color: #c62828;
+            font-weight: 500;
+        }
+
+        .waste-insight {
+            font-size: 1rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .table-container {
+                margin: 0 -1rem;
+                padding: 0 1rem;
+            }
+
+            .profit-bar-label {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Section -->
+        <div class="title-section">
+            <h1>Café Profit Snapshot</h1>
+            <p class="subtitle">A simple view of what's selling, what's profitable, and where money is lost.</p>
+        </div>
+
+        <!-- Product Table Section -->
+        <div class="product-table-section">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Cost</th>
+                            <th>Profit</th>
+                            <th>Margin (%)</th>
+                            <th>Sold</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        <!-- Product rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Profit Bars Section -->
+        <div class="profit-bars-section">
+            <div id="profitBarsContainer">
+                <!-- Profit bars will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Waste Summary Section -->
+        <div class="waste-summary">
+            <h2>Weekly Waste Impact</h2>
+            <div class="waste-stats">
+                Unsold items: <strong id="unsoldItems">80</strong> | Estimated lost revenue: <strong id="lostRevenue">€320</strong>
+            </div>
+            <p class="waste-insight">Reducing waste by 10% = +€32/week</p>
+        </div>
+    </div>
+
+    <script>
+        // Product data
+        const products = [
+            {
+                name: 'Korvapuusti',
+                price: 4.50,
+                cost: 1.40,
+                sold: 120,
+                insight: 'High margin and fast to produce — keep steady'
+            },
+            {
+                name: 'Cookie',
+                price: 4.80,
+                cost: 2.20,
+                sold: 95,
+                insight: 'Medium margin'
+            },
+            {
+                name: 'Carrot Cake',
+                price: 5.20,
+                cost: 2.80,
+                sold: 40,
+                insight: 'Lower sales, moderate margin'
+            },
+            {
+                name: 'Scone',
+                price: 3.90,
+                cost: 0.78,
+                sold: 60,
+                insight: '~80% margin, fast to produce, always vegan'
+            }
+        ];
+
+        // Calculate profit and margin for each product
+        function calculateProductMetrics(product) {
+            const profit = product.price - product.cost;
+            const margin = (profit / product.price) * 100;
+            return { profit, margin };
+        }
+
+        // Determine status based on margin and sales
+        function getStatus(margin, sold) {
+            if (margin > 60 && sold > 80) {
+                return 'strong';
+            } else if (margin >= 40 && margin <= 60) {
+                return 'stable';
+            } else {
+                return 'attention';
+            }
+        }
+
+        // Format currency
+        function formatCurrency(value) {
+            return '€' + value.toFixed(2);
+        }
+
+        // Format percentage
+        function formatPercentage(value) {
+            return value.toFixed(1) + '%';
+        }
+
+        // Render product table
+        function renderProductTable() {
+            const tbody = document.getElementById('productTableBody');
+            tbody.innerHTML = '';
+
+            products.forEach(product => {
+                const { profit, margin } = calculateProductMetrics(product);
+                const status = getStatus(margin, product.sold);
+                const statusClass = `status-${status}`;
+                const statusText = status === 'strong' ? 'Strong' : 
+                                  status === 'stable' ? 'Stable' : 
+                                  'Needs Attention';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${product.name}</strong></td>
+                    <td>${formatCurrency(product.price)}</td>
+                    <td>${formatCurrency(product.cost)}</td>
+                    <td>${formatCurrency(profit)}</td>
+                    <td>${formatPercentage(margin)}</td>
+                    <td>${product.sold}</td>
+                    <td><span class="status ${statusClass}">${statusText}</span></td>
+                `;
+                tbody.appendChild(row);
+
+                // Add insight row
+                const insightRow = document.createElement('tr');
+                insightRow.innerHTML = `
+                    <td colspan="7" class="insight">${product.insight}</td>
+                `;
+                tbody.appendChild(insightRow);
+            });
+        }
+
+        // Render profit bars
+        function renderProfitBars() {
+            const container = document.getElementById('profitBarsContainer');
+            container.innerHTML = '';
+
+            // Calculate max profit for scaling
+            const maxProfit = Math.max(...products.map(p => calculateProductMetrics(p).profit));
+
+            products.forEach(product => {
+                const { profit, margin } = calculateProductMetrics(product);
+                const status = getStatus(margin, product.sold);
+                const barClass = `profit-bar-${status}`;
+                const percentage = (profit / maxProfit) * 100;
+
+                const barItem = document.createElement('div');
+                barItem.className = 'profit-bar-item';
+                barItem.innerHTML = `
+                    <div class="profit-bar-label">
+                        <span class="profit-bar-label-name">${product.name}</span>
+                        <span class="profit-bar-label-value">${formatCurrency(profit)}</span>
+                    </div>
+                    <div class="profit-bar-container">
+                        <div class="profit-bar-fill ${barClass}" style="width: ${percentage}%">
+                            ${formatCurrency(profit)}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(barItem);
+            });
+        }
+
+        // Initialize the app
+        function init() {
+            renderProductTable();
+            renderProfitBars();
+        }
+
+        // Run on page load
+        init();
+    </script>
+</body>
+</html>
+

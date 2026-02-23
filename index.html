@@ -1,105 +1,236 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cafe Profit Snapshot</title>
+
 <style>
 :root {
---bg: #fafafa;
---card-bg: #ffffff;
---text: #1a1a1a;
---text-muted: #666;
---border: #f0f0f0;
---green: #2e7d32;
---green-bg: #e8f5e9;
---yellow: #f57c00;
---yellow-bg: #fff9e6;
---red: #c62828;
---red-bg: #ffebee;
+  --bg: #fafafa;
+  --card-bg: #ffffff;
+  --text: #1a1a1a;
+  --text-muted: #666;
+  --border: #f0f0f0;
+  --green: #2e7d32;
+  --green-bg: #e8f5e9;
+  --yellow: #f57c00;
+  --yellow-bg: #fff9e6;
+  --red: #c62828;
+  --red-bg: #ffebee;
 }
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-background-color: var(--bg);
-color: var(--text);
-padding: 1.5rem 1rem;
-max-width: 500px;
-margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 1.5rem 1rem;
+  max-width: 500px;
+  margin: 0 auto;
 }
-header { text-align: center; margin-bottom: 1.5rem; }
-h1 { font-size: 1.5rem; font-weight: 300; }
-.btn-reset {
-display: block;
-width: 100%;
-background: #eee;
-color: #666;
-border: none;
-padding: 0.6rem;
-border-radius: 8px;
-margin-bottom: 1.5rem;
-font-size: 0.8rem;
-cursor: pointer;
+
+header {
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
+
+h1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
 .card {
-background: var(--card-bg);
-padding: 1.2rem;
-border-radius: 12px;
-margin-bottom: 1rem;
-border: 1px solid var(--border);
-box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  background: var(--card-bg);
+  padding: 1.2rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
 }
+
 .card-header {
-display: flex;
-justify-content: space-between;
-margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
+
+.product-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
 .input-row {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 10px;
-margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 1rem;
 }
+
 .input-box label {
-display: block;
-font-size: 0.7rem;
-color: var(--text-muted);
-margin-bottom: 4px;
-text-transform: uppercase;
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
 }
+
 input {
-width: 100%;
-padding: 12px;
-font-size: 1.2rem;
-border: 1px solid var(--border);
-border-radius: 6px;
-background: #f9f9f9;
-text-align: center;
+  width: 100%;
+  padding: 12px;
+  font-size: 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #f9f9f9;
+  text-align: center;
+  font-weight: 600;
 }
+
+input:focus {
+  outline: none;
+  border-color: #1a1a1a;
+  background: white;
+}
+
 .profit-line {
-display: flex;
-justify-content: space-between;
-padding: 10px;
-border-radius: 6px;
-font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
+
 .status-strong { background: var(--green-bg); color: var(--green); }
 .status-stable { background: var(--yellow-bg); color: var(--yellow); }
 .status-attention { background: var(--red-bg); color: var(--red); }
+
 .summary-box {
-background: #1a1a1a;
-color: white;
-padding: 1.5rem;
-border-radius: 12px;
-text-align: center;
-margin-top: 2rem;
+  background: #1a1a1a;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-top: 2rem;
 }
-.summary-box h2 { font-weight: 300; font-size: 1rem; opacity: 0.7; }
-.total-val { font-size: 2.2rem; font-weight: 700; margin-top: 5px; }
+
+.summary-box h2 {
+  font-weight: 300;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.total-val {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-top: 5px;
+}
+
+.waste-subtext {
+  font-size: 0.8rem;
+  color: #ff8a80;
+  margin-top: 8px;
+  font-weight: 500;
+}
 </style>
 </head>
+
 <body>
+
+<header>
+  <h1>Operational Performance</h1>
+</header>
+
+<div id="product-list"></div>
+
+<div class="summary-box">
+  <h2>Weekly Net Profit</h2>
+  <div id="grand-total" class="total-val">€0.00</div>
+  <div id="total-waste-label" class="waste-subtext">Waste Impact: €0.00</div>
+</div>
+
+<script>
+const products = [
+  { name: 'Korvapuusti', price: 4.50, cost: 1.40, sold: 120, waste: 0 },
+  { name: 'Cookie', price: 4.80, cost: 2.20, sold: 95, waste: 0 },
+  { name: 'Carrot Cake', price: 5.20, cost: 2.80, sold: 40, waste: 0 },
+  { name: 'Scone', price: 3.90, cost: 0.78, sold: 60, waste: 0 }
+];
+
+function renderApp() {
+  const container = document.getElementById('product-list');
+  container.innerHTML = '';
+
+  let totalNetProfit = 0;
+  let totalWasteImpact = 0;
+
+  products.forEach((product, index) => {
+    const profitPerUnit = product.price - product.cost;
+    const netProfit = profitPerUnit * product.sold;
+    const wasteImpact = profitPerUnit * product.waste;
+    const margin = (profitPerUnit / product.price) * 100;
+
+    totalNetProfit += netProfit;
+    totalWasteImpact += wasteImpact;
+
+    let statusClass = 'status-stable';
+    if (margin >= 65) statusClass = 'status-strong';
+    if (margin < 40) statusClass = 'status-attention';
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    card.innerHTML = `
+      <div class="card-header">
+        <span class="product-name">${product.name}</span>
+        <span style="font-size:0.8rem;color:#666;">
+          €${product.price.toFixed(2)} / unit
+        </span>
+      </div>
+
+      <div class="input-row">
+        <div class="input-box">
+          <label>Units Sold</label>
+          <input type="number" min="0"
+            value="${product.sold}"
+            oninput="updateValue(${index}, 'sold', this.value)">
+        </div>
+
+        <div class="input-box">
+          <label>Waste</label>
+          <input type="number" min="0"
+            value="${product.waste}"
+            oninput="updateValue(${index}, 'waste', this.value)">
+        </div>
+      </div>
+
+      <div class="profit-line ${statusClass}">
+        <span>Net Profit Contribution</span>
+        <span>€${netProfit.toFixed(2)}</span>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  document.getElementById('grand-total').innerText =
+    `€${totalNetProfit.toFixed(2)}`;
+
+  document.getElementById('total-waste-label').innerText =
+    `Waste Impact: -€${totalWasteImpact.toFixed(2)}`;
+}
+
+function updateValue(index, field, value) {
+  products[index][field] = parseFloat(value) || 0;
+  renderApp();
+}
+
+renderApp();
+</script>
 
 </body>
 </html>

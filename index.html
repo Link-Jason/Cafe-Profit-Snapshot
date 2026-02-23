@@ -7,7 +7,7 @@
 
 <style>
 :root {
-  --bg: #fafafa;
+  --bg: #f4f4f6;
   --card-bg: #ffffff;
   --text: #1a1a1a;
   --text-muted: #666;
@@ -114,11 +114,9 @@ input:focus {
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.9rem;
+  background: var(--green-bg);
+  color: var(--green);
 }
-
-.status-strong { background: var(--green-bg); color: var(--green); }
-.status-stable { background: var(--yellow-bg); color: var(--yellow); }
-.status-attention { background: var(--red-bg); color: var(--red); }
 
 .waste-line {
   display: flex;
@@ -177,6 +175,11 @@ input:focus {
   font-size: 1.2rem;
 }
 
+.summary-neutral {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+}
+
 .insight-box {
   margin-top: 1rem;
   padding: 0.9rem 1rem;
@@ -207,7 +210,7 @@ input:focus {
 
   <div class="summary-row">
     <span class="summary-label">Weekly Net Profit</span>
-    <span id="grand-total" class="summary-value summary-profit">€0.00</span>
+    <span id="grand-total" class="summary-value">€0.00</span>
   </div>
 
   <div class="summary-row">
@@ -243,14 +246,9 @@ function renderApp() {
     const profitPerUnit = product.price - product.cost;
     const netProfit = profitPerUnit * product.sold;
     const wasteImpact = profitPerUnit * product.waste;
-    const margin = (profitPerUnit / product.price) * 100;
 
     totalNetProfit += netProfit;
     totalWasteImpact += wasteImpact;
-
-    let statusClass = 'status-stable';
-    if (margin >= 65) statusClass = 'status-strong';
-    if (margin < 40) statusClass = 'status-attention';
 
     const card = document.createElement('div');
     card.className = 'card';
@@ -288,7 +286,7 @@ function renderApp() {
         </div>
       </div>
 
-      <div class="profit-line ${statusClass}">
+      <div class="profit-line">
         <span>Net Profit Contribution</span>
         <span>€${netProfit.toFixed(2)}</span>
       </div>
@@ -298,11 +296,21 @@ function renderApp() {
     container.appendChild(card);
   });
 
+  const grandTotalElement = document.getElementById('grand-total');
   const totalWasteElement = document.getElementById('total-waste');
   const goalImpactElement = document.getElementById('goal-impact');
 
-  document.getElementById('grand-total').innerText =
+  grandTotalElement.innerText =
     `€${totalNetProfit.toFixed(2)}`;
+
+  grandTotalElement.classList.remove('summary-profit', 'summary-loss', 'summary-neutral');
+  if (totalNetProfit > 0) {
+    grandTotalElement.classList.add('summary-profit');
+  } else if (totalNetProfit < 0) {
+    grandTotalElement.classList.add('summary-loss');
+  } else {
+    grandTotalElement.classList.add('summary-neutral');
+  }
 
   totalWasteElement.innerText =
     `€${totalWasteImpact.toFixed(2)}`;

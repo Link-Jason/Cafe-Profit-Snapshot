@@ -27,21 +27,26 @@ body {
   background-color: var(--bg);
   color: var(--text);
   padding: 1.5rem 1rem;
-  max-width: 500px;
+  max-width: 520px;
   margin: 0 auto;
 }
 
 header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 1.5rem;
 }
 
 h1 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
   color: var(--text-muted);
-  letter-spacing: 1px;
+  max-width: 28rem;
 }
 
 .card {
@@ -61,14 +66,19 @@ h1 {
 
 .product-name {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+}
+
+.unit-price {
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 .input-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .input-box label {
@@ -77,12 +87,13 @@ h1 {
   color: var(--text-muted);
   margin-bottom: 4px;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 input {
   width: 100%;
-  padding: 12px;
-  font-size: 1.1rem;
+  padding: 10px;
+  font-size: 1rem;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: #f9f9f9;
@@ -93,7 +104,7 @@ input {
 input:focus {
   outline: none;
   border-color: #1a1a1a;
-  background: white;
+  background: #ffffff;
 }
 
 .profit-line {
@@ -109,32 +120,75 @@ input:focus {
 .status-stable { background: var(--yellow-bg); color: var(--yellow); }
 .status-attention { background: var(--red-bg); color: var(--red); }
 
+.waste-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px;
+  margin-top: 6px;
+  border-radius: 6px;
+  background: var(--red-bg);
+  color: var(--red);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
 .summary-box {
-  background: #1a1a1a;
-  color: white;
-  padding: 1.5rem;
+  background: var(--card-bg);
   border-radius: 12px;
-  text-align: center;
+  border: 1px solid var(--border);
+  padding: 1.3rem 1.2rem;
   margin-top: 2rem;
 }
 
 .summary-box h2 {
-  font-weight: 300;
-  font-size: 1rem;
-  opacity: 0.7;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
 }
 
-.total-val {
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin-top: 5px;
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 0.5rem;
 }
 
-.waste-subtext {
+.summary-label {
   font-size: 0.8rem;
-  color: #ff8a80;
-  margin-top: 8px;
-  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-value {
+  font-weight: 700;
+}
+
+.summary-profit {
+  color: var(--green);
+  font-size: 1.4rem;
+}
+
+.summary-loss {
+  color: var(--red);
+  font-size: 1.2rem;
+}
+
+.insight-box {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: #f4f6ff;
+  border: 1px solid #e0e4ff;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.insight-box strong {
+  font-weight: 600;
 }
 </style>
 </head>
@@ -142,15 +196,32 @@ input:focus {
 <body>
 
 <header>
-  <h1>Operational Performance</h1>
+  <h1>Café Profit &amp; Loss — Waste Awareness Tracker</h1>
+  <p class="subtitle">Track weekly earnings and identify profit lost to unsold inventory.</p>
 </header>
 
 <div id="product-list"></div>
 
 <div class="summary-box">
-  <h2>Weekly Net Profit</h2>
-  <div id="grand-total" class="total-val">€0.00</div>
-  <div id="total-waste-label" class="waste-subtext">Waste Impact: €0.00</div>
+  <h2>Weekly Overview</h2>
+
+  <div class="summary-row">
+    <span class="summary-label">Weekly Net Profit</span>
+    <span id="grand-total" class="summary-value summary-profit">€0.00</span>
+  </div>
+
+  <div class="summary-row">
+    <span class="summary-label">Total Profit Lost to Waste</span>
+    <span id="total-waste" class="summary-value summary-loss">€0.00</span>
+  </div>
+</div>
+
+<div class="insight-box">
+  <p>
+    <strong>Efficiency Goal:</strong>
+    Reducing waste by 20% would increase weekly profit by
+    <span id="goal-impact">€0.00</span>.
+  </p>
 </div>
 
 <script>
@@ -184,10 +255,19 @@ function renderApp() {
     const card = document.createElement('div');
     card.className = 'card';
 
+    const wasteLine = product.waste > 0
+      ? `
+      <div class="waste-line">
+        <span>Waste Impact</span>
+        <span>€${wasteImpact.toFixed(2)} lost</span>
+      </div>
+      `
+      : '';
+
     card.innerHTML = `
       <div class="card-header">
         <span class="product-name">${product.name}</span>
-        <span style="font-size:0.8rem;color:#666;">
+        <span class="unit-price">
           €${product.price.toFixed(2)} / unit
         </span>
       </div>
@@ -201,7 +281,7 @@ function renderApp() {
         </div>
 
         <div class="input-box">
-          <label>Waste</label>
+          <label>Waste Units</label>
           <input type="number" min="0"
             value="${product.waste}"
             oninput="updateValue(${index}, 'waste', this.value)">
@@ -212,16 +292,23 @@ function renderApp() {
         <span>Net Profit Contribution</span>
         <span>€${netProfit.toFixed(2)}</span>
       </div>
+      ${wasteLine}
     `;
 
     container.appendChild(card);
   });
 
+  const totalWasteElement = document.getElementById('total-waste');
+  const goalImpactElement = document.getElementById('goal-impact');
+
   document.getElementById('grand-total').innerText =
     `€${totalNetProfit.toFixed(2)}`;
 
-  document.getElementById('total-waste-label').innerText =
-    `Waste Impact: -€${totalWasteImpact.toFixed(2)}`;
+  totalWasteElement.innerText =
+    `€${totalWasteImpact.toFixed(2)}`;
+
+  goalImpactElement.innerText =
+    `€${(totalWasteImpact * 0.2).toFixed(2)}`;
 }
 
 function updateValue(index, field, value) {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cafe Profit Snapshot</title>
+<title>Café Profit &amp; Loss — Waste Awareness Tracker</title>
 
 <style>
 :root {
@@ -14,8 +14,6 @@
   --border: #f0f0f0;
   --green: #2e7d32;
   --green-bg: #e8f5e9;
-  --yellow: #f57c00;
-  --yellow-bg: #fff9e6;
   --red: #c62828;
   --red-bg: #ffebee;
 }
@@ -55,23 +53,15 @@ h1 {
   border-radius: 12px;
   margin-bottom: 1rem;
   border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.product-name {
-  font-weight: 700;
-  font-size: 1.05rem;
-}
-
-.unit-price {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+.config-row {
+  display: grid;
+  grid-template-columns: 1.5fr 0.8fr 0.8fr;
+  gap: 10px;
+  margin-bottom: 0.75rem;
+  align-items: end;
 }
 
 .input-row {
@@ -92,12 +82,12 @@ h1 {
 
 input {
   width: 100%;
-  padding: 10px;
-  font-size: 1rem;
+  padding: 8px 9px;
+  font-size: 0.92rem;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #f9f9f9;
-  text-align: center;
+  background: #fbfbfb;
+  text-align: left;
   font-weight: 600;
 }
 
@@ -105,6 +95,17 @@ input:focus {
   outline: none;
   border-color: #1a1a1a;
   background: #ffffff;
+}
+
+input.input-primary {
+  padding: 12px;
+  font-size: 1.05rem;
+  text-align: center;
+  background: #f9f9f9;
+}
+
+.input-name {
+  text-transform: none;
 }
 
 .profit-line {
@@ -136,6 +137,7 @@ input:focus {
   border: 1px solid var(--border);
   padding: 1.3rem 1.2rem;
   margin-top: 2rem;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
 }
 
 .summary-box h2 {
@@ -235,19 +237,25 @@ const products = [
   { name: 'Scone', price: 3.90, cost: 0.78, sold: 0, waste: 0 }
 ];
 
+const eur = new Intl.NumberFormat(undefined, {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
+
 function renderApp() {
   const container = document.getElementById('product-list');
   container.innerHTML = '';
 
-  let totalNetProfit = 0;
+  let totalContribution = 0;
   let totalWasteImpact = 0;
 
   products.forEach((product, index) => {
-    const profitPerUnit = product.price - product.cost;
-    const netProfit = profitPerUnit * product.sold;
-    const wasteImpact = profitPerUnit * product.waste;
+    const contribution = product.sold * (product.price - product.cost);
+    const wasteImpact = product.waste * product.cost;
 
-    totalNetProfit += netProfit;
+    totalContribution += contribution;
     totalWasteImpact += wasteImpact;
 
     const card = document.createElement('div');
@@ -257,30 +265,46 @@ function renderApp() {
       ? `
       <div class="waste-line">
         <span>Waste Impact</span>
-        <span>€${wasteImpact.toFixed(2)} lost</span>
+        <span>${eur.format(wasteImpact)} lost</span>
       </div>
       `
       : '';
 
     card.innerHTML = `
-      <div class="card-header">
-        <span class="product-name">${product.name}</span>
-        <span class="unit-price">
-          €${product.price.toFixed(2)} / unit
-        </span>
+      <div class="config-row">
+        <div class="input-box">
+          <label>Product Name</label>
+          <input class="input-name" type="text"
+            value="${product.name}"
+            oninput="updateValue(${index}, 'name', this.value)">
+        </div>
+
+        <div class="input-box">
+          <label>Price / Unit</label>
+          <input type="number" min="0" step="0.01"
+            value="${product.price.toFixed(2)}"
+            oninput="updateValue(${index}, 'price', this.value)">
+        </div>
+
+        <div class="input-box">
+          <label>Cost / Unit</label>
+          <input type="number" min="0" step="0.01"
+            value="${product.cost.toFixed(2)}"
+            oninput="updateValue(${index}, 'cost', this.value)">
+        </div>
       </div>
 
       <div class="input-row">
         <div class="input-box">
           <label>Units Sold</label>
-          <input type="number" min="0"
+          <input class="input-primary" type="number" min="0" step="1"
             value="${product.sold}"
             oninput="updateValue(${index}, 'sold', this.value)">
         </div>
 
         <div class="input-box">
           <label>Waste Units</label>
-          <input type="number" min="0"
+          <input class="input-primary" type="number" min="0" step="1"
             value="${product.waste}"
             oninput="updateValue(${index}, 'waste', this.value)">
         </div>
@@ -288,7 +312,7 @@ function renderApp() {
 
       <div class="profit-line">
         <span>Net Profit Contribution</span>
-        <span>€${netProfit.toFixed(2)}</span>
+        <span>${eur.format(contribution)}</span>
       </div>
       ${wasteLine}
     `;
@@ -300,27 +324,37 @@ function renderApp() {
   const totalWasteElement = document.getElementById('total-waste');
   const goalImpactElement = document.getElementById('goal-impact');
 
+  const weeklyNetProfit = totalContribution - totalWasteImpact;
+
   grandTotalElement.innerText =
-    `€${totalNetProfit.toFixed(2)}`;
+    eur.format(weeklyNetProfit);
 
   grandTotalElement.classList.remove('summary-profit', 'summary-loss', 'summary-neutral');
-  if (totalNetProfit > 0) {
+  if (weeklyNetProfit > 0) {
     grandTotalElement.classList.add('summary-profit');
-  } else if (totalNetProfit < 0) {
+  } else if (weeklyNetProfit < 0) {
     grandTotalElement.classList.add('summary-loss');
   } else {
     grandTotalElement.classList.add('summary-neutral');
   }
 
   totalWasteElement.innerText =
-    `€${totalWasteImpact.toFixed(2)}`;
+    eur.format(totalWasteImpact);
 
   goalImpactElement.innerText =
-    `€${(totalWasteImpact * 0.2).toFixed(2)}`;
+    eur.format(totalWasteImpact * 0.2);
 }
 
 function updateValue(index, field, value) {
-  products[index][field] = parseFloat(value) || 0;
+  if (field === 'name') {
+    products[index].name = value;
+  } else if (field === 'sold' || field === 'waste') {
+    const n = Number(value);
+    products[index][field] = Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
+  } else {
+    const n = Number(value);
+    products[index][field] = Number.isFinite(n) ? Math.max(0, n) : 0;
+  }
   renderApp();
 }
 
